@@ -18,32 +18,8 @@ type CubeState = {
 };
 
 export default function Cube({ sides }: Props) {
-  // const initialPosition = (s: number) => {
-  //   const newPos: Position[] = [];
-  //   for (let position = 0; position < sides * sides; position++) {
-  //     newPos.push({ side: s, position });
-  //   }
-
-  //   return newPos;
-  // };
-
-  // const [side0, setSide0] = useState<Position[]>(initialPosition(0));
-  // const [side1, setSide1] = useState<Position[]>(initialPosition(1));
-  // const [side2, setSide2] = useState<Position[]>(initialPosition(2));
-  // const [side3, setSide3] = useState<Position[]>(initialPosition(3));
-  // const [side4, setSide4] = useState<Position[]>(initialPosition(4));
-  // const [side5, setSide5] = useState<Position[]>(initialPosition(5));
-
-  // useEffect(() => {
-  //   setSide0((prev) => {
-  //     const newPos = [...prev];
-  //     newPos[0].side = 1;
-  //     return newPos;
-  //   });
-  // }, []);
-
   const cubeState: CubeState[] = [];
-  for (let side = 0; side < sides; side++) {
+  for (let side = 0; side < 6; side++) {
     for (let position = 0; position < sides * sides; position++) {
       cubeState.push({ side, position, color: side, ref: useRef<any>(null) });
     }
@@ -58,13 +34,64 @@ export default function Cube({ sides }: Props) {
     );
   });
 
+  // Set the position and rotation of each tile
+
+  const TILE_SIZE = properties.cubeScale / properties.sides;
   useEffect(() => {
     cubeState[0].ref.current.position.set(0, 3, 0);
+    // Go through each space
+    for (let i = 0; i < cubeState.length; i++) {
+      const x = (cubeState[i].position % sides) * TILE_SIZE - (properties.cubeScale / 2 - TILE_SIZE / 2);
+      const y = Math.floor(cubeState[i].position / sides) * TILE_SIZE - (properties.cubeScale / 2 - TILE_SIZE / 2);
+
+      // FRONT SIDE
+      if (cubeState[i].side === 0) {
+        cubeState[i].ref.current.rotation.set(0, 0, 0);
+        cubeState[i].ref.current.position.set(x, y, properties.cubeScale / 2 + 0.01);
+      }
+
+      // RIGHT SIDE
+      if (cubeState[i].side === 1) {
+        cubeState[i].ref.current.rotation.set(0, Math.PI / 2, 0);
+        cubeState[i].ref.current.position.set(properties.cubeScale / 2 + 0.01, y, -x);
+      }
+
+      // BACK SIDE
+      if (cubeState[i].side === 2) {
+        cubeState[i].ref.current.rotation.set(0, Math.PI, 0);
+        cubeState[i].ref.current.position.set(-x, y, -properties.cubeScale / 2 - 0.01);
+      }
+
+      // LEFT SIDE
+      if (cubeState[i].side === 3) {
+        cubeState[i].ref.current.rotation.set(0, (3 * Math.PI) / 2, 0);
+        cubeState[i].ref.current.position.set(-properties.cubeScale / 2 - 0.01, y, x);
+      }
+
+      // TOP SIDE
+      if (cubeState[i].side === 4) {
+        cubeState[i].ref.current.rotation.set((3 * Math.PI) / 2, 0, 0);
+        cubeState[i].ref.current.position.set(x, properties.cubeScale / 2 + 0.01, -y);
+      }
+
+      // BOTTOM SIDE
+      if (cubeState[i].side === 5) {
+        cubeState[i].ref.current.rotation.set(Math.PI / 2, 0, 0);
+        cubeState[i].ref.current.position.set(x, -properties.cubeScale / 2 - 0.01, y);
+      }
+
+      // Set the scale of each tile each is - 0.01 to avoid tiles touching each other so you can distinguish them
+      cubeState[i].ref.current.scale.set(
+        properties.cubeScale / properties.sides - 0.01,
+        properties.cubeScale / properties.sides - 0.01,
+        properties.cubeScale / properties.sides - 0.01
+      );
+    }
   }, []);
 
   return (
     <>
-      {/* <BaseCube /> */}
+      <BaseCube />
       {elements}
     </>
   );

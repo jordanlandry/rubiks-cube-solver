@@ -8,7 +8,7 @@ function App() {
     <div className="App">
       <Canvas style={{ height: "100vh" }}>
         <OrbitControls />
-        <ambientLight intensity={1} />
+        <ambientLight intensity={0.1} />
         <Cube sides={properties.sides} />
       </Canvas>
     </div>
